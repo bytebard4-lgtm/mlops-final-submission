@@ -1,6 +1,8 @@
 mlflow
 scikit-learn
+pandas
+numpy
 flask
 pytest
-numpy
-pandas
+joblib
+flake8

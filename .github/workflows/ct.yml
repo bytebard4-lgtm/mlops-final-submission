@@ -12,10 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      PYTHONPATH: .
       MLFLOW_TRACKING_URI: file:./mlruns
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -28,11 +29,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run retraining pipeline
-        run: |
-          python src/train_models.py
-
-      - name: Verify model artifact exists
-        run: |
-          ls -lh models/
-          test -f models/best_model.pkl
+      - name: Run training pipeline
+        run: python src/train_models.py

@@ -26,8 +26,3 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mlops-app:latest
-
-      # 🔥 THIS IS WHAT MAKES IT "REAL CD"
-      - name: Trigger deployment (VM hook)
-        run: |
-          curl -X POST ${{ secrets.VM_DEPLOY_HOOK }}

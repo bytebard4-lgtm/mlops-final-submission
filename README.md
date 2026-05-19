@@ -12,3 +12,4 @@ This strategy ensures stable production releases while allowing experimentation 
 # test ci
 # trigger CI
 # trigger CI
+CI test
