@@ -28,8 +28,11 @@ from sklearn.ensemble import RandomForestClassifier
 # SAFE ENV FOR CI/CD + K8S
 # ==========================================
 os.environ["HOME"] = "/tmp"
+
 os.environ["MLFLOW_TRACKING_URI"] = "file:./mlruns"
+
 os.environ["MLFLOW_ARTIFACT_ROOT"] = "./mlruns"
+
 os.environ["MLFLOW_REGISTRY_URI"] = "file:./mlruns"
 
 
@@ -58,9 +61,9 @@ def load_data():
 def train():
 
     # SAFE LOCAL MLFLOW DIRECTORY
-    BASE_DIR = os.path.abspath(os.getcwd())
+    base_dir = os.path.abspath(os.getcwd())
 
-    mlflow_dir = os.path.join(BASE_DIR, "mlruns")
+    mlflow_dir = os.path.join(base_dir, "mlruns")
 
     os.makedirs(mlflow_dir, exist_ok=True)
 
@@ -81,9 +84,7 @@ def train():
 
     except Exception:
 
-        experiment = mlflow.get_experiment_by_name(
-            experiment_name
-        )
+        pass
 
     mlflow.set_experiment(experiment_name)
 
