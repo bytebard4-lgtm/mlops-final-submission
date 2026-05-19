@@ -1,0 +1,15 @@
+artifact_uri: file:///home/bytebard4/mlops-final-submission/mlruns/564984445922757537/e4b6df8ad12349b4a38a1291167ac7d5/artifacts
+end_time: 1779221155222
+entry_point_name: ''
+experiment_id: '564984445922757537'
+lifecycle_stage: active
+run_id: e4b6df8ad12349b4a38a1291167ac7d5
+run_name: LogisticRegression
+run_uuid: e4b6df8ad12349b4a38a1291167ac7d5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779221155174
+status: 4
+tags: []
+user_id: bytebard4

@@ -12,12 +12,6 @@ MLOps Training Pipeline (FINAL FIXED VERSION)
 """
 
 import os
-
-# 🔥 FORCE SAFE ENV (CRITICAL FIX FOR CI/CD + MLflow)
-os.environ["HOME"] = "/tmp"
-os.environ["MLFLOW_TRACKING_URI"] = "file:./mlruns"
-os.environ["MLFLOW_ARTIFACT_ROOT"] = "./mlruns"
-
 import mlflow
 import mlflow.sklearn
 import pandas as pd
@@ -29,6 +23,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
+# 🔥 SAFE ENV CONFIG (MUST BE AFTER IMPORTS)
+os.environ["HOME"] = "/tmp"
+os.environ["MLFLOW_TRACKING_URI"] = "file:./mlruns"
+os.environ["MLFLOW_ARTIFACT_ROOT"] = "./mlruns"
 
 # =========================
 # DATA LOADING
