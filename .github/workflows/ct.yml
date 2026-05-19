@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - 'data/**'
-
   schedule:
     - cron: '0 0 * * *'
 
@@ -16,7 +15,7 @@ jobs:
       MLFLOW_TRACKING_URI: file:./mlruns
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -29,11 +28,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Detect data change
-        run: echo "Data change detected → starting retraining pipeline"
+      - name: Run retraining pipeline
+        run: |
+          python src/train_models.py
 
-      - name: Run training pipeline
-        run: python src/train_models.py
-
-      - name: Training completed
-        run: echo "CT pipeline finished successfully"
+      - name: Verify model artifact exists
+        run: |
+          ls -lh models/
+          test -f models/best_model.pkl
