@@ -13,7 +13,8 @@ jobs:
 
     env:
       PYTHONPATH: .
-      MLFLOW_TRACKING_URI: file:/tmp/mlruns
+      HOME: /tmp
+      MLFLOW_TRACKING_URI: file:./mlruns
 
     steps:
       - name: Checkout repository

@@ -10,6 +10,8 @@ jobs:
 
     env:
       PYTHONPATH: .
+      HOME: /tmp
+      MLFLOW_TRACKING_URI: file:./mlruns
 
     steps:
       - name: Checkout repository
@@ -34,7 +36,5 @@ jobs:
       - name: Run unit tests
         run: pytest tests -v
 
-      - name: Smoke test training pipeline (CI SAFE)
-        env:
-          MLFLOW_TRACKING_URI: file:/tmp/mlruns
+      - name: Smoke test training pipeline
         run: python src/train_models.py
