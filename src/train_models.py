@@ -1,21 +1,17 @@
 """
-MLOps Training Pipeline (FINAL FIXED VERSION)
+MLOps Training Pipeline (FINAL STABLE VERSION)
 --------------------------------------------
-- CI/CD safe (GitHub Actions compatible)
-- MLflow safe paths (/tmp + repo-local mlruns)
-- Fixes /home permission error
-- Data ingestion
-- Model training
-- Experiment tracking
-- Best model selection
-- Model promotion (pickle)
+- CI/CD safe
+- GitHub Actions safe
+- Kubernetes safe
+- No MLflow permission issues
+- Manual artifact logging
 """
 
 import os
 import joblib
 import pandas as pd
 import mlflow
-import mlflow.sklearn
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -31,17 +27,15 @@ os.environ["HOME"] = "/tmp"
 
 os.environ["MLFLOW_TRACKING_URI"] = "file:./mlruns"
 
-os.environ["MLFLOW_ARTIFACT_ROOT"] = "./mlruns"
-
-os.environ["MLFLOW_REGISTRY_URI"] = "file:./mlruns"
-
 
 # ==========================================
 # DATA LOADING
 # ==========================================
 def load_data():
 
-    df = pd.read_csv("data/iris_custom.csv")
+    df = pd.read_csv(
+        "data/iris_custom.csv"
+    )
 
     X = df.iloc[:, :-1]
 
@@ -60,46 +54,57 @@ def load_data():
 # ==========================================
 def train():
 
-    # SAFE LOCAL MLFLOW DIRECTORY
-    base_dir = os.path.abspath(os.getcwd())
+    # LOCAL MLFLOW DIRECTORY
+    base_dir = os.path.abspath(
+        os.getcwd()
+    )
 
-    mlflow_dir = os.path.join(base_dir, "mlruns")
+    mlruns_dir = os.path.join(
+        base_dir,
+        "mlruns"
+    )
 
-    os.makedirs(mlflow_dir, exist_ok=True)
+    os.makedirs(
+        mlruns_dir,
+        exist_ok=True
+    )
 
-    # FORCE LOCAL TRACKING URI
-    mlflow.set_tracking_uri(f"file:{mlflow_dir}")
+    # FORCE LOCAL TRACKING
+    mlflow.set_tracking_uri(
+        f"file:{mlruns_dir}"
+    )
 
-    # ==========================================
-    # SAFE EXPERIMENT CREATION
-    # ==========================================
-    experiment_name = "iris-classification-experiment"
+    # CREATE EXPERIMENT
+    experiment_name = (
+        "iris-classification"
+    )
 
     try:
 
         mlflow.create_experiment(
-            experiment_name,
-            artifact_location=f"file:{mlflow_dir}"
+            experiment_name
         )
 
     except Exception:
 
         pass
 
-    mlflow.set_experiment(experiment_name)
+    mlflow.set_experiment(
+        experiment_name
+    )
 
-    # ==========================================
     # LOAD DATA
-    # ==========================================
-    X_train, X_test, y_train, y_test = load_data()
+    X_train, X_test, y_train, y_test = (
+        load_data()
+    )
 
-    # ==========================================
     # MODELS
-    # ==========================================
     models = {
 
         "LogisticRegression":
-            LogisticRegression(max_iter=200),
+            LogisticRegression(
+                max_iter=200
+            ),
 
         "DecisionTree":
             DecisionTreeClassifier(),
@@ -119,21 +124,34 @@ def train():
     # ==========================================
     for name, model in models.items():
 
-        with mlflow.start_run(run_name=name):
+        with mlflow.start_run(
+            run_name=name
+        ):
 
             # TRAIN
-            model.fit(X_train, y_train)
+            model.fit(
+                X_train,
+                y_train
+            )
 
             # PREDICT
-            preds = model.predict(X_test)
+            preds = model.predict(
+                X_test
+            )
 
             # METRICS
-            acc = accuracy_score(y_test, preds)
+            acc = accuracy_score(
+                y_test,
+                preds
+            )
 
-            print(f"{name} accuracy: {acc:.4f}")
+            print(
+                f"{name} accuracy: "
+                f"{acc:.4f}"
+            )
 
             # ==========================================
-            # LOG PARAMETERS & METRICS
+            # LOG PARAMETERS
             # ==========================================
             mlflow.log_param(
                 "model_name",
@@ -145,6 +163,9 @@ def train():
                 "iris_custom.csv"
             )
 
+            # ==========================================
+            # LOG METRICS
+            # ==========================================
             mlflow.log_metric(
                 "accuracy",
                 acc
@@ -156,12 +177,27 @@ def train():
             )
 
             # ==========================================
-            # LOG MODEL
+            # SAVE MODEL TEMPORARILY
             # ==========================================
-            mlflow.sklearn.log_model(
-                sk_model=model,
-                name="model",
-                input_example=X_train.iloc[:1]
+            os.makedirs(
+                "temp_models",
+                exist_ok=True
+            )
+
+            temp_model_path = (
+                f"temp_models/{name}.pkl"
+            )
+
+            joblib.dump(
+                model,
+                temp_model_path
+            )
+
+            # ==========================================
+            # LOG MODEL FILE
+            # ==========================================
+            mlflow.log_artifact(
+                temp_model_path
             )
 
             # ==========================================
@@ -178,13 +214,18 @@ def train():
     # ==========================================
     # SAVE BEST MODEL
     # ==========================================
-    os.makedirs("models", exist_ok=True)
+    os.makedirs(
+        "models",
+        exist_ok=True
+    )
 
-    model_path = "models/best_model.pkl"
+    best_model_path = (
+        "models/best_model.pkl"
+    )
 
     joblib.dump(
         best_model,
-        model_path
+        best_model_path
     )
 
     # ==========================================
@@ -192,11 +233,19 @@ def train():
     # ==========================================
     print("\n======================")
 
-    print(f"BEST MODEL: {best_name}")
+    print(
+        f"BEST MODEL: {best_name}"
+    )
 
-    print(f"ACCURACY: {best_accuracy:.4f}")
+    print(
+        f"ACCURACY: "
+        f"{best_accuracy:.4f}"
+    )
 
-    print(f"SAVED: {model_path}")
+    print(
+        f"SAVED: "
+        f"{best_model_path}"
+    )
 
     print("======================\n")
 
