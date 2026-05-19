@@ -1,0 +1,39 @@
+name: Continuous Training (CT)
+
+on:
+  push:
+    paths:
+      - 'data/**'
+
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+
+    env:
+      MLFLOW_TRACKING_URI: file:./mlruns
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Detect data change
+        run: echo "Data change detected → starting retraining pipeline"
+
+      - name: Run training pipeline
+        run: python src/train_models.py
+
+      - name: Training completed
+        run: echo "CT pipeline finished successfully"
