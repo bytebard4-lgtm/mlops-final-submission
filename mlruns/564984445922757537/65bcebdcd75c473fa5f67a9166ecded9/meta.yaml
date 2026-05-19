@@ -1,0 +1,15 @@
+artifact_uri: file:///home/bytebard4/mlops-final-submission/mlruns/564984445922757537/65bcebdcd75c473fa5f67a9166ecded9/artifacts
+end_time: 1779215346959
+entry_point_name: ''
+experiment_id: '564984445922757537'
+lifecycle_stage: active
+run_id: 65bcebdcd75c473fa5f67a9166ecded9
+run_name: RandomForest
+run_uuid: 65bcebdcd75c473fa5f67a9166ecded9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779215344176
+status: 3
+tags: []
+user_id: bytebard4

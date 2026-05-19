@@ -1,0 +1,15 @@
+artifact_uri: file:///home/bytebard4/mlops-final-submission/mlruns/564984445922757537/fb4c007a54c8421db9ec5ef9b0896fdf/artifacts
+end_time: 1779215344172
+entry_point_name: ''
+experiment_id: '564984445922757537'
+lifecycle_stage: active
+run_id: fb4c007a54c8421db9ec5ef9b0896fdf
+run_name: DecisionTree
+run_uuid: fb4c007a54c8421db9ec5ef9b0896fdf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779215341548
+status: 3
+tags: []
+user_id: bytebard4

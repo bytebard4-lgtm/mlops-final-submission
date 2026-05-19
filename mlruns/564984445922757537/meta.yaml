@@ -1,0 +1,6 @@
+artifact_location: file:///home/bytebard4/mlops-final-submission/mlruns/564984445922757537
+creation_time: 1779215335411
+experiment_id: '564984445922757537'
+last_update_time: 1779215335411
+lifecycle_stage: active
+name: iris-classification-experiment
