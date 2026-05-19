@@ -41,6 +41,7 @@ def load_data():
     df = pd.read_csv("data/iris_custom.csv")
 
     X = df.iloc[:, :-1]
+
     y = df.iloc[:, -1]
 
     return train_test_split(
@@ -73,7 +74,7 @@ def train():
 
     try:
 
-        experiment_id = mlflow.create_experiment(
+        mlflow.create_experiment(
             experiment_name,
             artifact_location=f"file:{mlflow_dir}"
         )
@@ -83,8 +84,6 @@ def train():
         experiment = mlflow.get_experiment_by_name(
             experiment_name
         )
-
-        experiment_id = experiment.experiment_id
 
     mlflow.set_experiment(experiment_name)
 
@@ -109,7 +108,9 @@ def train():
     }
 
     best_model = None
+
     best_accuracy = -1
+
     best_name = None
 
     # ==========================================
@@ -133,14 +134,20 @@ def train():
             # ==========================================
             # LOG PARAMETERS & METRICS
             # ==========================================
-            mlflow.log_param("model_name", name)
+            mlflow.log_param(
+                "model_name",
+                name
+            )
 
             mlflow.log_param(
                 "dataset",
                 "iris_custom.csv"
             )
 
-            mlflow.log_metric("accuracy", acc)
+            mlflow.log_metric(
+                "accuracy",
+                acc
+            )
 
             mlflow.log_metric(
                 "error_rate",
@@ -174,7 +181,10 @@ def train():
 
     model_path = "models/best_model.pkl"
 
-    joblib.dump(best_model, model_path)
+    joblib.dump(
+        best_model,
+        model_path
+    )
 
     # ==========================================
     # FINAL RESULTS
