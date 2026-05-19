@@ -17,16 +17,19 @@ import mlflow.sklearn
 import pandas as pd
 import joblib
 
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
+
 # 🔥 SAFE ENV CONFIG (MUST BE AFTER IMPORTS)
 os.environ["HOME"] = "/tmp"
 os.environ["MLFLOW_TRACKING_URI"] = "file:./mlruns"
 os.environ["MLFLOW_ARTIFACT_ROOT"] = "./mlruns"
+
 
 # =========================
 # DATA LOADING
@@ -65,6 +68,8 @@ def train():
     best_accuracy = -1
     best_name = None
 
+
+
     # =========================
     # TRAIN MODELS
     # =========================
@@ -98,6 +103,7 @@ def train():
                 best_accuracy = acc
                 best_model = model
                 best_name = name
+
 
     # =========================
     # SAVE BEST MODEL
