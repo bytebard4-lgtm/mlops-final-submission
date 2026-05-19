@@ -17,7 +17,6 @@ import mlflow.sklearn
 import pandas as pd
 import joblib
 
-
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
@@ -25,10 +24,11 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
 
-# 🔥 SAFE ENV CONFIG (MUST BE AFTER IMPORTS)
+# SAFE ENV FOR CI/CD + K8S
 os.environ["HOME"] = "/tmp"
 os.environ["MLFLOW_TRACKING_URI"] = "file:./mlruns"
 os.environ["MLFLOW_ARTIFACT_ROOT"] = "./mlruns"
+os.environ["MLFLOW_REGISTRY_URI"] = "file:./mlruns"
 
 
 # =========================
@@ -48,12 +48,12 @@ def load_data():
 # =========================
 def train():
 
-    # 🔥 SAFE MLflow directory inside repo
+    # SAFE MLflow directory inside repo
     BASE_DIR = os.path.abspath(os.getcwd())
     mlflow_dir = os.path.join(BASE_DIR, "mlruns")
     os.makedirs(mlflow_dir, exist_ok=True)
 
-    mlflow.set_tracking_uri(f"file:{mlflow_dir}")
+    mlflow.set_tracking_uri("file:./mlruns")
     mlflow.set_experiment("iris-classification-experiment")
 
     X_train, X_test, y_train, y_test = load_data()
@@ -67,7 +67,6 @@ def train():
     best_model = None
     best_accuracy = -1
     best_name = None
-
 
     # =========================
     # TRAIN MODELS
@@ -89,12 +88,11 @@ def train():
             mlflow.log_metric("accuracy", acc)
             mlflow.log_metric("error_rate", 1 - acc)
 
-            # 🔥 FIX: prevents /home artifact fallback
+            # MLflow model logging
             mlflow.sklearn.log_model(
                 sk_model=model,
-                name="model",
-                input_example=X_train.iloc[:1],
-                artifact_path="model"
+                artifact_path="model",
+                input_example=X_train.iloc[:1]
             )
 
             # Track best model
@@ -102,7 +100,6 @@ def train():
                 best_accuracy = acc
                 best_model = model
                 best_name = name
-
 
     # =========================
     # SAVE BEST MODEL
