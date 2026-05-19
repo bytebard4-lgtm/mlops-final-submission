@@ -8,6 +8,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      PYTHONPATH: .
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,9 +26,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
-
       - name: Lint code
         run: |
           pip install flake8
@@ -34,5 +34,7 @@ jobs:
       - name: Run unit tests
         run: pytest tests -v
 
-      - name: Smoke test training pipeline
+      - name: Smoke test training pipeline (CI SAFE)
+        env:
+          MLFLOW_TRACKING_URI: file:/tmp/mlruns
         run: python src/train_models.py
