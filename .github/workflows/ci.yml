@@ -31,10 +31,18 @@ jobs:
       - name: Lint code
         run: |
           pip install flake8
-          flake8 src app
+          flake8 src app --max-line-length=100
 
       - name: Run unit tests
-        run: pytest tests -v
+        run: pytest tests -v --tb=short
 
       - name: Smoke test training pipeline
         run: python src/train_models.py
+
+      - name: Verify model artifact exists
+        run: |
+          if [ ! -f models/best_model.pkl ]; then
+            echo "ERROR: best_model.pkl not found after training"
+            exit 1
+          fi
+          echo "Model artifact verified OK"
