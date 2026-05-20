@@ -1,38 +1,36 @@
 """
 Unit tests for the Flask prediction API.
-Tests the /health and /predict endpoints without a live server
-by using Flask's built-in test client.
+Uses Flask's built-in test client — no live server needed.
 """
 
 import sys
 import os
 import joblib
-import numpy as np
 import pytest
 
-# Make sure the app module can find models/best_model.pkl
 os.environ.setdefault("PYTHONPATH", ".")
 
 
-# ── Fixture: create a minimal model so the app can import ────────────────────
+# ── Fixture: ensure a trained model exists before importing app ───────────────
 @pytest.fixture(scope="module", autouse=True)
-def ensure_model(tmp_path_factory):
+def ensure_model():
     """Train a tiny model so app.py can load it during tests."""
     from sklearn.linear_model import LogisticRegression
-    from sklearn.datasets import load_iris
+    import pandas as pd
 
     os.makedirs("models", exist_ok=True)
     if not os.path.exists("models/best_model.pkl"):
-        iris = load_iris()
+        df = pd.read_csv("data/iris_custom.csv")
+        X = df.iloc[:, :-1]
+        y = df.iloc[:, -1]
         clf = LogisticRegression(max_iter=200)
-        clf.fit(iris.data, iris.target)
+        clf.fit(X, y)
         joblib.dump(clf, "models/best_model.pkl")
 
 
-# ── Import app after model is guaranteed to exist ────────────────────────────
+# ── Flask test client ─────────────────────────────────────────────────────────
 @pytest.fixture(scope="module")
 def client():
-    # Import here so the fixture above runs first
     sys.path.insert(0, os.path.abspath("."))
     from app.app import app
     app.config["TESTING"] = True
@@ -40,6 +38,7 @@ def client():
         yield c
 
 
+# ── Tests ─────────────────────────────────────────────────────────────────────
 def test_health_endpoint(client):
     """GET /health must return 200 and model_loaded=True."""
     response = client.get("/health")
@@ -50,13 +49,9 @@ def test_health_endpoint(client):
 
 
 def test_predict_endpoint(client):
-    """POST /predict with valid Iris features must return a prediction."""
+    """POST /predict with valid features must return a prediction list."""
     payload = {"features": [5.1, 3.5, 1.4, 0.2]}
-    response = client.post(
-        "/predict",
-        json=payload,
-        content_type="application/json"
-    )
+    response = client.post("/predict", json=payload)
     assert response.status_code == 200
     data = response.get_json()
     assert "prediction" in data
@@ -65,8 +60,9 @@ def test_predict_endpoint(client):
 
 
 def test_predict_returns_valid_class(client):
-    """Prediction must be one of the three Iris classes (0, 1, 2)."""
+    """Prediction must be one of the three Iris species strings."""
+    valid_classes = {"Iris-setosa", "Iris-versicolor", "Iris-virginica"}
     payload = {"features": [6.3, 3.3, 6.0, 2.5]}
     response = client.post("/predict", json=payload)
     data = response.get_json()
-    assert data["prediction"][0] in [0, 1, 2]
+    assert data["prediction"][0] in valid_classes
