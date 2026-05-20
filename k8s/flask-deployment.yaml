@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlops-flask
+  labels:
+    app: mlops-flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlops-flask
+  template:
+    metadata:
+      labels:
+        app: mlops-flask
+    spec:
+      containers:
+        - name: mlops-flask
+          image: DOCKERHUB_USERNAME/mlops-app:latest
+          ports:
+            - containerPort: 5002
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 5
+            periodSeconds: 10
