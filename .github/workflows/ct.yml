@@ -6,6 +6,7 @@ on:
       - 'data/**'
   schedule:
     - cron: '0 0 * * *'
+  workflow_dispatch:      # allows manual trigger from GitHub UI
 
 jobs:
   retrain:
@@ -30,5 +31,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run training pipeline
-        run: python src/train_models.py
+      - name: Check if data changed & retrain
+        run: python src/check_data_and_retrain.py
+
+      - name: Run unit tests on retrained model
+        run: pytest tests -v --tb=short
+
+      - name: Verify retrained model artifact
+        run: |
+          if [ ! -f models/best_model.pkl ]; then
+            echo "ERROR: best_model.pkl missing after retraining"
+            exit 1
+          fi
+          echo "Retrained model artifact OK"
+
+      - name: Commit updated model & hash back to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add models/best_model.pkl data/data.hash || true
+          git diff --cached --quiet || \
+            git commit -m "chore: auto-retrain model [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
