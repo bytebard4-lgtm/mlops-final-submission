@@ -6,6 +6,6 @@ feature/*   → experimental features
 
 Workflow:
 
-feature/new-model → develop → main → deployment
+feature/new-model → develop → main
 
 This strategy ensures stable production releases while allowing experimentation and testing.
