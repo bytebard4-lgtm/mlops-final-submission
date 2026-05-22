@@ -18,7 +18,7 @@ export PYTHONPATH=$(pwd)
 
 pip install -r requirements.txt
 
-Just explain you're checking the code follows Python style rules:
+checking the code follows Python style rules:
 flake8 src app --max-line-length=100
 
 Run the tests:
@@ -30,15 +30,16 @@ python src/train_models.py
 Check the model file actually got created:
 ls -lh models/best_model.pkl
 
-Open a second terminal and launch MLflow — leave it running and open the browser at http://127.0.0.1:5000 to show the experiment runs, the accuracy of each model and which one won:
+Open a second terminal and launch MLflow, leave it running and open the browser at http://127.0.0.1:5000 to show the experiment runs, the accuracy of each model and which one won:
 mlflow ui --backend-store-uri file:./mlruns or mlflow ui --backend-store-uri file:$(pwd)/mlruns --port 5001 if your port 5000 is occupied like my case
 
-Back in the first terminal, show the CT pipeline working — you fake a data change by touching the CSV and then the script detects the hash is different and retrains:
+Back in the first terminal, to test the CT pipeline working you can fake a data change by touching the CSV and then the script detects the hash is different and retrains:
 echo "" >> data/iris_custom.csv
 python src/check_data_and_retrain.py
 
 Start the Flask API:
 python app/app.py
+
 Open a third terminal and hit the two endpoints:
 
 curl http://localhost:5002/health
