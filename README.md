@@ -31,7 +31,7 @@ Check the model file actually got created:
 ls -lh models/best_model.pkl
 
 Open a second terminal and launch MLflow — leave it running and open the browser at http://127.0.0.1:5000 to show the experiment runs, the accuracy of each model and which one won:
-mlflow ui --backend-store-uri file:./mlruns
+mlflow ui --backend-store-uri file:./mlruns or mlflow ui --backend-store-uri file:$(pwd)/mlruns --port 5001 if your port 5000 is occupied like my case
 
 Back in the first terminal, show the CT pipeline working — you fake a data change by touching the CSV and then the script detects the hash is different and retrains:
 echo "" >> data/iris_custom.csv
