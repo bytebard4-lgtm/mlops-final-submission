@@ -52,5 +52,7 @@ curl -X POST http://localhost:5002/predict \
   -H "Content-Type: application/json" \
   -d '{"features": [6.3, 3.3, 6.0, 2.5]}'
 
-  <img width="94" height="150" alt="mlops_full_pipeline" src="https://github.com/user-attachments/assets/21f9e455-8025-497b-85ec-f3d1f1b752f0" />
+  Pipeline functonality diagram
+
+  <img width="640" height="640" alt="mlops_full_pipeline" src="https://github.com/user-attachments/assets/21f9e455-8025-497b-85ec-f3d1f1b752f0" />
 
